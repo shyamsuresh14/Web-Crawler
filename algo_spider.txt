@@ -1,0 +1,77 @@
+1). Create a class Spider with
+     1.1). Class variables: project, base_url, domain_name, 
+     waiting_list_file, crawler_file, waiting_list, crawled. 
+     1.2). Define a constructor, __init__(project, base_url, 
+     domain) as,
+            Initialise class variables,
+                  project <- project
+                  base_url <- base_url
+                  domain_name <- domain
+                  waiting_list_file <- project + '/waiting_list.txt'
+                  crawled_file <- project + '/crawled.txt'
+
+            call boot()
+            call crawl_page() with '\nFirst Spider' and base_url
+
+     1.3). Define function boot() as,
+             call create_crawler_dir() with Spider.project and 
+             create_storage_file() project, base_url 
+             waiting_list <- call file_to_set() with waiting_list_file.
+             crawled <- call file_to_set() with crawled_file.
+             using functions in module basic_func.
+
+     1.4). Define function crawl_page(thread,page) as,
+             if page not in Spider.crawled,
+                print thread + ' now crawling ' + page
+                call print_status()
+                call append_links_to_waiting_list() with the result
+                 of calling get_links with page.
+                Remove page from waiting_list.
+                Add page to crawled.
+                call update_files_status()
+
+     1.5). Define function print_status() as,
+        print 'Waiting list = ' + length(waiting_list) + ' '.
+        print ' Crawled = ' + length(crawled).
+
+     1.6). Define function get_links(page_url) as,
+        try,
+            response <- call urlopen with page_url.
+            if response.getheader('Content-Type') in ['text/html;charset=UTF-8','text/html; charset=utf-8','text/html'],
+                html_in_bytes <- response.read()
+                html_as_string <- html_in_bytes.decode('utf-8')
+                linkfinder <- link_finder(base_url, page_url)   
+                //object of class link_finder
+                linkfinder.feed(html_as_string)
+                return linkfinder.links_in_page()
+            
+            else,
+                return empty set.    
+
+        except,
+            //SSL Certificate verification failed for the page
+            error_file <- project + '/error_links'
+            if error_file does not exist,
+                create an error_file and write the page_url.
+            else,
+                append the page_url to the error_file.    
+            return empty set.    
+            
+        using functions from modules urllib.request and basic_func
+
+    
+     1.7). Define function append_links_to_waiting_list(links) as,
+        if links set is not empty:
+            for link in links.copy():
+                if link in waiting_list or crawled,
+                    continue
+                elseif domain_name not in link,
+                    //to stop crawling pages of a different(unwanted) site       
+                    continue     
+                else,
+                    Add link to waiting_list.
+
+     1.8). Define function update_files_status() as,
+        call save_data(waiting_list, waiting_list_file)
+        call save_data(crawled, crawled_file)
+        using function from basic_func

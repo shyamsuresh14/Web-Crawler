@@ -1,0 +1,71 @@
+Using functions and classes in modules threading, time, 
+queue, spider, domain_getter, web_scrapper, basic_func 
+
+Define function main(BASE_URL, keyword) as,
+    1). Set PROJECT_NAME <- 'web_crawler'
+            WAITING_LIST <- PROJECT_NAME + '/waiting_list.txt'
+            CRAWLED_FILE <- PROJECT_NAME + '/crawled.txt'
+            NO_OF_THREADS <- 8
+
+    2). Define function create_crawlers() as,
+            do NO_OF_THREADS times,
+                create a thread, t and assign it with target
+                work()               //creating a thread 
+                t.daemon <- True     //to kill the thread when the program ends
+                t.start()                       
+
+    3). Define work() as,    
+            while True,
+                url <- get a url from thread_queue 
+                call crawl_page(current_thread's name, url)
+                thread_queue.task_done()            
+
+    4). Define creating_jobs() as,
+            for link in basic_func.file_to_set(WAITING_LIST):
+                Add link to the thread_queue
+                do thread_queue.join() to avoid bumping of links 
+                and to make the thread_queue wait for its next link.
+                call crawl()
+
+    5). Define crawl():
+            waiting_list_links <- set of links in WAITING_LIST
+            if length(waiting_list_links) > 0:
+                print length(waiting_list_links)) + ' links in waiting list'
+                call creating_jobs()
+
+    6). Set DOMAIN_NAME <- get_domain_name(BASE_URL)
+            start_time <- current time
+
+    7). if check_internet_connection() = True,
+        
+            7.1). Set up a thread_queue.
+
+            7.2). Create the first spider with PROJECT_NAME, 
+            BASE_URL, DOMAIN_NAME.
+
+            7.3). print '\nNow crawling..............\n'
+                  initiate the work by calling functions
+                  create_crawlers() and then crawl()
+
+            7.4). Print final status of crawling,
+                  Call print_status()
+                  print '\nEnd of crawling!!\n' + '----------------------'
+
+
+            7.5). Set time_taken <- cuurent time - start_time
+                  print 'Time taken to crawl: ' + (time_taken) + ' s' + '\n'
+
+            7.6). Set gathered_links <- set of links in CRAWLED_FILE
+                  no_of_pages <- 0
+
+            7.7). print '\nThe pages in the which the given keyword is found: \n'
+                  for link in gathered_links:
+                    if web_sc(link,keyword) = 1:
+                        no_of_pages <- no_of_pages + 1
+
+            7.8). if no_of_pages > 0:
+                    print 'The given keyword is found in ' + (no_of_pages) + ' pages')
+                  else:
+                    print 'The keyword is not found in any page!'
+
+            7.9). print '\nEnd of program!\n' + '-----------------------'
